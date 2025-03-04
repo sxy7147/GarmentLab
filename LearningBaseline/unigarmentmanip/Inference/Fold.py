@@ -1,6 +1,12 @@
 import sys
-sys.path.append("/home/user/GarmentLab/Env")
-sys.path.append("/home/user/GarmentLab")
+import os
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+print('BASE_DIR: ', BASE_DIR)
+sys.path.append('.')
+sys.path.append(os.path.join(BASE_DIR, '../Env'))
+print('sys.path: ', sys.path)
+# sys.path.append("/home/user/GarmentLab/Env")
+# sys.path.append("/home/user/GarmentLab")
 from Env.env.FoldEnv import FoldEnv
 from Env.Config.GarmentConfig import GarmentConfig
 from Env.Config.FrankaConfig import FrankaConfig
@@ -9,7 +15,7 @@ from LearningBaseline.unigarmentmanip.model.UniGarmentManip_Encapsulation import
 import open3d as o3d
 
 if __name__=="__main__":
-    garment_config=GarmentConfig(usd_path="/home/user/GarmentLab/Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Dress057/TNLC_Dress057_obj.usd",pos=np.array([0.5,-0.5,0.2]),ori=np.array([0,0,0]),particle_contact_offset=0.01)
+    garment_config=GarmentConfig(usd_path="./Assets/Garment/Tops/NoCollar_Lsleeve_FrontClose/TNLC_Dress057/TNLC_Dress057_obj.usd",pos=np.array([0.5,-0.5,0.2]),ori=np.array([0,0,0]),particle_contact_offset=0.01)
     env=FoldEnv(garment_config=[garment_config],
                 franka_config=FrankaConfig(ori=[np.array([0,0,0])]))
     env.reset()

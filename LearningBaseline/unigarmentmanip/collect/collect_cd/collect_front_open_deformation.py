@@ -1,6 +1,11 @@
 import os
 import sys
 sys.path.append(os.getcwd())
+# BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# print('BASE_DIR: ', BASE_DIR)
+# sys.path.append('.')
+# sys.path.append(os.path.join(BASE_DIR, '../Env'))
+# print('sys.path: ', sys.path)
 import torch
 import numpy as np
 
@@ -31,12 +36,14 @@ from omni.physx.scripts import deformableUtils,particleUtils,physicsUtils
 from omni.physx import acquire_physx_interface
 from pxr import UsdGeom,UsdPhysics,PhysxSchema, Gf
 from omni.isaac.core.utils.types import ArticulationAction
+from omni.isaac.core.prims import XFormPrim, ClothPrim, RigidPrim, GeometryPrim, ParticleSystem
 
 from Env.env.BaseEnv import BaseEnv
 
 from Env.Deformable.Deformable import Deformable
 
 from Env.Garment.Garment import Garment
+from Env.Config.GarmentConfig import GarmentConfig
 
 
 from Env.Camera.Recording_Camera import Recording_Camera
@@ -45,8 +52,8 @@ from LearningBaseline.unigarmentmanip.collect.utils.CollisionGroup import Collis
 from LearningBaseline.unigarmentmanip.collect.utils.transforms import Rotation
 from LearningBaseline.unigarmentmanip.collect.utils.file_operation import get_unique_filename
 from LearningBaseline.unigarmentmanip.collect.utils.utils import get_pcd2mesh_correspondence, get_mesh2pcd_correspondence, get_max_sequence_number
-from LearningBaseline.unigarmentmanip.collect.utils import normalize_pcd_points, unnormalize_pcd_points, get_visible_indices
-from  LearningBaseline.unigarmentmanip.collect.utils.attachmentblock import AttachmentBlock
+from LearningBaseline.unigarmentmanip.collect.utils.pcd_utils import normalize_pcd_points, unnormalize_pcd_points, get_visible_indices
+from LearningBaseline.unigarmentmanip.collect.utils.attachmentblock import AttachmentBlock
 
 import shutil
 import open3d as o3d
@@ -60,18 +67,20 @@ class LiftGarment_Collect_Deformation(BaseEnv):
         # store garment path
         self.garment_path = []
         # load Garment Object
-        self.garment = Garment(world=self.world,
-                               usd_path=garment_path,
-                               pos=garment_position,
-                               ori=garment_orientation,
-                               friction=10.0,
-                               contact_offset=0.018,
-                               rest_offset=0.015,
-                               particle_contact_offset=0.018,
-                               fluid_rest_offset=0.015,
-                               solid_rest_offset=0.015,
-                               particle_adhesion_scale=0.05,
-                               particle_friction_scale=0.05,)
+        self.garment = Garment(self.world, 
+                               garment_config=GarmentConfig(usd_path=garment_path,
+                                pos=garment_position,
+                                ori=garment_orientation,
+                                friction=10.0,
+                                contact_offset=0.018,
+                                rest_offset=0.015,
+                                particle_contact_offset=0.018,
+                                fluid_rest_offset=0.015,
+                                solid_rest_offset=0.015,), 
+                            #    particle_system=ParticleSystem(
+                            #     particle_adhesion_scale=0.05,
+                            #     particle_friction_scale=0.05,),
+                               )
         
         self.garment_path.append(self.garment.garment_prim_path)
               
@@ -299,7 +308,8 @@ def manipulate_garment(env, save_idx, save_npz_dir, save_rgb_dir):
                 mesh_points=mesh_points)
 
     env.recording_camera.get_rgb_graph(
-        save_path=os.path.join(save_rgb_dir, f"rgb_{save_idx}.png")
+        save_path=os.path.join(save_rgb_dir, f"rgb_{save_idx}.png",),
+        save_or_not=True
     )
     
     save_idx += 1
@@ -366,6 +376,8 @@ def collect_data(type, idx, garment_usd_path, rotate_x, rotate_y):
     
     # 开始变形
     manipulate_garment(env, nxt_save_idx, save_npz_dir, save_rgb_dir)
+    
+    print('finished')
 
 
     
@@ -375,11 +387,11 @@ if __name__=="__main__":
 
     import argparse
     parser = argparse.ArgumentParser(description="Collect deformation data for a specific garment.")
-    parser.add_argument("type", type=str, help="Type of garment")
-    parser.add_argument("idx", type=int, help="Index of the garment")
-    parser.add_argument("garment_usd_path", type=str, help="Path to the garment USD file")
-    parser.add_argument("rotate_x", type=int, help="Rotation angle around the x-axis")
-    parser.add_argument("rotate_y", type=int, help="Rotation angle around the y-axis")
+    parser.add_argument("--type", type=str, default='front_open', help="Type of garment")
+    parser.add_argument("--idx", type=int, default=0, help="Index of the garment")
+    parser.add_argument("--garment_usd_path", type=str, default="./Assets/Garment/Tops/Collar_Lsleeve_FrontOpen/TCLO_model2_054/TCLO_model2_054_obj.usd", help="Path to the garment USD file")
+    parser.add_argument("--rotate_x", type=int, default=0, help="Rotation angle around the x-axis")
+    parser.add_argument("--rotate_y", type=int, default=0, help="Rotation angle around the y-axis")
     args = parser.parse_args()  
     
     type = args.type
@@ -390,9 +402,11 @@ if __name__=="__main__":
     
     # type = "front_open"
     # idx = 0
-    # garment_usd_path = "Assets/Garment/Tops/Collar_Lsleeve_FrontOpen/TCLO_model2_054/TCLO_model2_054_obj.usd"
+    # garment_usd_path = "./Assets/Garment/Tops/Collar_Lsleeve_FrontOpen/TCLO_model2_054/TCLO_model2_054_obj.usd"
     # rotate_x = 0
     # rotate_y = 0
+    # python LearningBaseline/unigarmentmanip/collect/collect_cd/collect_front_open_deformation.py --type front_open --idx 0 --garment_usd_path ./Assets/Garment/Tops/Collar_Lsleeve_FrontOpen/TCLO_model2_054/TCLO_model2_054_obj.usd --rotate_x 0 --rotate_y 0
+
     collect_data(type, idx, garment_usd_path,
                  rotate_x, rotate_y)
     

@@ -88,7 +88,7 @@ class DefControl:
         self.world=world
         self.robot=robot
         self.deformable=deformable
-        assert len(self.robot)==len(self.deformable), "The number of robot and deformable must be the same"
+        # assert len(self.robot)==len(self.deformable), "The number of robot and deformable must be the same"
         self.stage=self.world.stage
         self.grasp_offset=torch.tensor([0.,0.,-0.01])
         self.collision_group()
@@ -172,6 +172,12 @@ class DefControl:
             if flag[i]:
                 self.robot[i].close()
                 self.attachlist[i].attach(object_list[i])
+    
+    def bimanual_attach(self, robot_list, object_list, flag:list[bool]):
+        for i in range(len(robot_list)):
+            if flag[i]:
+                self.robot[i].close()
+                self.attachlist[i].attach(object_list[0])
                 
     def robot_close(self,flag:list[bool]):
         for i in range(len(self.robot)):
@@ -201,6 +207,24 @@ class DefControl:
         self.world.pause()
         self.make_attachment(pos,flag)
         self.attach(self.deformable,flag)
+        self.world.play()
+        for i in range(30):
+            self.world.step()
+        self.robot_close(flag)
+        
+
+
+    def bimanual_grasp(self,pos:list,ori:list,flag:list[bool]):
+        '''
+        grasp_function
+        pos: list of robots grasp position
+        ori: list of robots grasp orientation
+        flag: list of bool, grasp or not
+        '''
+        self.robot_goto_position(pos,ori,flag)
+        self.world.pause()
+        self.make_attachment(pos,flag)
+        self.bimanual_attach(self.robot, self.deformable,flag)
         self.world.play()
         for i in range(30):
             self.world.step()

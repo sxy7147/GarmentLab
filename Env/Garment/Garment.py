@@ -1,6 +1,7 @@
 import numpy as np
 from omni.isaac.core import World
 from omni.isaac.core.materials.particle_material import ParticleMaterial
+# from isaacsim.core.api.materials.particle_material import ParticleMaterial    # isaacsim4.5.0
 from omni.isaac.core.prims.soft.cloth_prim import ClothPrim
 from omni.isaac.core.prims.soft.cloth_prim_view import ClothPrimView
 from omni.isaac.core.prims.soft.particle_system import ParticleSystem
@@ -19,6 +20,7 @@ import omni.physxdemos as demo
 from Env.Config.GarmentConfig import GarmentConfig
 import omni.isaac.core.utils.prims as prims_utils
 from omni.isaac.core.materials.preview_surface import PreviewSurface
+# from isaacsim.core.api.materials.preview_surface import PreviewSurface    # isaacsim4.5.0
 
 class Garment:
     def __init__(self,world:World,garment_config:GarmentConfig,particle_system:ParticleSystem=None):

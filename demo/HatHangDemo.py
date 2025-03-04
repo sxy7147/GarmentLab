@@ -1,5 +1,11 @@
 import sys
-sys.path.append("/home/user/GarmentLab")
+import os
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+print('BASE_DIR: ', BASE_DIR)
+sys.path.append('.')
+sys.path.append(os.path.join(BASE_DIR, '../Env'))
+print('sys.path: ', sys.path)
+# sys.path.append("/home/user/GarmentLab")
 from Env.env.DeformableEnv import DeformableEnv
 
 from Env.Config.GarmentConfig import GarmentConfig

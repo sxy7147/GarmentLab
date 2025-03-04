@@ -23,16 +23,21 @@ class Deformable:
         self.deformable_config=deformable_config
         self.usd_path=self.deformable_config.usd_path
         self.stage=world.stage
+        print('\n\n\nself.stage: ', self.stage, '\n\n\n')
         self.deformable_view=UsdGeom.Xform.Define(self.stage,"/World/Deformable")
         self.deformable_name=find_unique_string_name(initial_name="deformable",is_unique_fn=lambda x: not world.scene.object_exists(x))  
         self.deformable_prim_path=find_unique_string_name("/World/Deformable/deformable",is_unique_fn=lambda x: not is_prim_path_valid(x))
+        # self.deformable_prim_path=find_unique_string_name("/World/Deformable",is_unique_fn=lambda x: not is_prim_path_valid(x))
         
         self.deformable=XFormPrim(
             prim_path=self.deformable_prim_path,
             name=self.deformable_name,
             position=self.deformable_config.pos,
             orientation=euler_angles_to_quat(self.deformable_config.ori),
+            # orientation=self.deformable_config.ori, # 直接使用四元数而非欧拉角
             scale=self.deformable_config.scale,)
+        
+        print('\n\n\nquat: ', euler_angles_to_quat(self.deformable_config.ori), '\n\n\n')
         
         self.deformable_material_path=find_unique_string_name("/World/Deformable/deformable_material",is_unique_fn=lambda x: not is_prim_path_valid(x))
         self.deformable_material = DeformableMaterial(
@@ -43,6 +48,9 @@ class Deformable:
                 damping_scale=self.deformable_config.damping_scale,
                 elasticity_damping=self.deformable_config.elasticity_damping,
             )
+        print('poissons_ratio: ', self.deformable_config.poissons_ratio)
+        print('elasticity_damping: ', self.deformable_config.elasticity_damping)
+        print('damping_scale: ', self.deformable_config.damping_scale)
         add_reference_to_stage(usd_path=self.usd_path,prim_path=self.deformable_prim_path)
 
         self.deformable_mesh_prim_path=self.deformable_prim_path+"/mesh"
@@ -64,9 +72,10 @@ class Deformable:
                 prim_path=self.deformable_mesh_prim_path,
                 position=self.deformable_config.pos,
                 orientation=euler_angles_to_quat(self.deformable_config.ori),
+                # orientation=self.deformable_config.ori, # 直接使用四元数而非欧拉角
                 deformable_material=self.deformable_material,
                 vertex_velocity_damping=self.deformable_config.vertex_velocity_damping,
-                sleep_damping=self.deformable_config.sleep_damping,
+                # sleep_damping=self.deformable_config.sleep_damping,
                 sleep_threshold=self.deformable_config.sleep_threshold,
                 settling_threshold=self.deformable_config.settling_threshold,
                 self_collision=self.deformable_config.self_collision,

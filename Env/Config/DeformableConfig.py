@@ -2,7 +2,7 @@ import numpy as np
 import torch
 
 class DeformableConfig:
-    def __init__(self,usd_path:str="/home/user/GarmentLab/Assets/Garment/Hat/HA_Hat007/HA_Hat007_obj.usd",pos:np.ndarray=None,ori:np.ndarray=None,scale:np.ndarray=None,visual_material_usd:str="/home/user/GarmentLab/Assets/Material/linen_Pumpkin.usd",youngs_modulus:float=None):
+    def __init__(self,usd_path:str="./Assets/Garment/Hat/HA_Hat007/HA_Hat007_obj.usd",pos:np.ndarray=None,ori:np.ndarray=None,scale:np.ndarray=None,visual_material_usd:str="./Assets/Material/linen_Pumpkin.usd",youngs_modulus:float=None):
         if pos is None:
             self.pos=np.array([0.6,1.3,0.3])
         else:
@@ -24,6 +24,9 @@ class DeformableConfig:
         self.poissons_ratio=None
         self.damping_scale=None
         self.elasticity_damping=None
+        # self.poissons_ratio=0
+        # self.damping_scale=1.0
+        # self.elasticity_damping=1.0
         self.vertex_velocity_damping=0.0
         self.sleep_damping=10.0
         self.sleep_threshold=0.05

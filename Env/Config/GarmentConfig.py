@@ -3,7 +3,8 @@ import numpy as np
 from typing import Union
 
 class GarmentConfig:
-    def __init__(self,usd_path:str="/home/user/GarmentLab/Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_074/TCLC_074_obj.usd",pos:Union[torch.Tensor,np.ndarray]=np.array([0.5,-0.5,0.3]),ori:Union[torch.Tensor,np.ndarray]=np.array([0,0,np.pi/2]),scale:np.ndarray=np.array([0.005,0.005,0.005]),visual_material_usd:str="/home/user/GarmentLab/Assets/Material/linen_Pumpkin.usd",particle_contact_offset:float=0.02):
+    def __init__(self,usd_path:str="./Assets/Garment/Tops/Collar_Lsleeve_FrontClose/TCLC_074/TCLC_074_obj.usd",pos:Union[torch.Tensor,np.ndarray]=np.array([0.5,-0.5,0.3]),ori:Union[torch.Tensor,np.ndarray]=np.array([0,0,np.pi/2]),scale:np.ndarray=np.array([0.005,0.005,0.005]),visual_material_usd:str="./Assets/Material/linen_Pumpkin.usd",particle_contact_offset:float=0.02, 
+                 friction:float=0.3, contact_offset=None, rest_offset=None, solid_rest_offset=None, fluid_rest_offset=None):
         self.usd_path=usd_path
         if isinstance(pos,np.ndarray):
             self.pos=torch.from_numpy(pos)
@@ -27,9 +28,9 @@ class GarmentConfig:
         self.global_self_collision_enabled=True
         self.non_particle_collision_enabled=True
         self.solver_position_iteration_count=16
-        self.friction=0.3
+        self.friction=friction
         self.visual_material_usd=visual_material_usd
-        self.contact_offset=None
-        self.rest_offset=None
-        self.solid_rest_offset=None
-        self.fluid_rest_offset=None
+        self.contact_offset=contact_offset
+        self.rest_offset=rest_offset
+        self.solid_rest_offset=solid_rest_offset
+        self.fluid_rest_offset=fluid_rest_offset
